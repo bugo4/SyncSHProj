@@ -120,7 +120,7 @@ class SSHClient {
             })
             this.serviceEvent.on(failureServerResponse, data => {
                 console.log("(connectSSH) SSHClient failed")
-                reject(data);
+                reject(data.message);
                 // if (ServerIP == SSHServerIP && ServerPort == SSHServerPort) {
                 //     return reject();
                 // }
@@ -152,7 +152,7 @@ class SSHClient {
             })
             this.serviceEvent.on(failureServerResponse, data => {
                 console.log("(sendCommand) SSHClient failed")
-                reject(data);
+                reject(data.message);
                 // if (ServerIP == SSHServerIP && ServerPort == SSHServerPort) {
                 //     return reject();
                 // }

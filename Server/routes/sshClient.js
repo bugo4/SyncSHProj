@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const UserModel = require("../models/user");
+const AccountModel = require("../models/machineAccount");
 
 const { isLoggedIn } = require("../utils/middlewares");
 
@@ -38,7 +39,7 @@ router.post("/connect", isLoggedIn, isWSConnected, async (req, res) => {
         foundUser = await UserModel.find({
             _id: userId, 
             cachedUserServers: {_id: accountId}
-        });
+        }).populate('cachedUserServers');
     }
     catch {
         foundUser = null
@@ -49,15 +50,28 @@ router.post("/connect", isLoggedIn, isWSConnected, async (req, res) => {
             message: "The machine id is not correct...",
         });
     }
-    console.log(foundUser)
-    const connectedToMachine = true
-    // Todo: send a connection request to the ssh client on the specified accound id
-    if (!connectedToMachine) {
+    const foundAccount = await AccountModel.findById(accountId).populate("serverConfiguration")
+    if (!foundAccount) {
         return res.json({
             type: "error",
-            message: "Unable to connect to machine...",
-        });
+            message: "Account id was not found...",
+        }); 
     }
+    console.log("Found Account")
+    console.log(foundAccount)
+    try {
+        const connectedToMachine = await sshClientInstance.connectSSH(accountId, foundAccount.serverConfiguration.serverIP, foundAccount.serverConfiguration.serverPort, foundAccount.name, foundAccount.password)
+    } catch (e) {
+        console.log(e)
+        return res.json({type: "error", message: e})
+    }
+    // Todo: send a connection request to the ssh client on the specified accound id
+
+    //     return res.json({
+    //         type: "error",
+    //         message: "Unable to connect to machine...",
+    //     });
+    // }
     // addPlayerToRoom(sessionId, accountId)
     console.log(req.user)
     await redisClient.sAdd(accountId, userName)
