@@ -9,12 +9,27 @@ import OSToolbar from "./OSToolbar/OSToolbar";
 import "./MachineWindow.css";
 import { Alert, AlertTitle } from "@material-ui/lab";
 
+
+import DesktopApp from "./MachineApp/apps/DesktopApp/DesktopApp";
+import DesktopIcon from "../../../assets/syncsh_icon.png" 
+
+import TerminalApp from "./MachineApp/apps/TerminalApp/TerminalApp";
+import TerminalIcon from "../../../assets/terminal_icon.png" 
+
 // import { useCancelToken } from '../../../utils/hooks';
+function createTaskbarApp(name, windowElement, srcIcon) {
+    return {name, windowElement, srcIcon}
+}
 
 export default function MachineWindow({ activeMachine }) {
+    const mainApp = createTaskbarApp("Desktop", <DesktopApp/>, DesktopIcon)
+
     const [connectionResponse, setConnectionResponse] = useState(null);
-    const [openApps, setOpenApps] = useState([])
-    const [activeApp, setActiveApp] = useState(null)
+    const [openApps, setOpenApps] = useState([
+        mainApp,
+        createTaskbarApp("Terminal", <TerminalApp/>, TerminalIcon)
+    ])
+    const [activeApp, setActiveApp] = useState(mainApp)
 
     useEffect(() => {
         setConnectionResponse(null);
@@ -33,13 +48,15 @@ export default function MachineWindow({ activeMachine }) {
     }, [activeMachine]);
 
     function handleOpenApp(openedApp) {
-        alert(openedApp)
         for(let i = 0; i < openApps.length; i++) {
-            if (openApps[i] === openedApp) {
+            if (openApps[i].name === openedApp.name) {
                 setActiveApp(openedApp)
                 return;
             }
         }
+        alert("No match was found...")
+        console.dir(openApps)
+        console.dir(openedApp)
         openApps.push(openedApp)
         setActiveApp(openedApp)
     }
@@ -52,7 +69,7 @@ export default function MachineWindow({ activeMachine }) {
             return (
                 <div className="os_window_body">
                     <div className="desktop_apps__container">
-                        <MachineApp setOpenApps={setOpenApps} setActiveApp={setActiveApp}/>
+                        <MachineApp setOpenApps={setOpenApps} setActiveApp={setActiveApp} activeApp={activeApp}/>
                         <OSToolbar openApps={openApps} activeApp={activeApp} onOpenApp={handleOpenApp}/>
                     </div>
                 </div>

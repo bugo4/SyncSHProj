@@ -1,12 +1,12 @@
 import React from 'react'
-import DesktopApp from './DesktopApp/DesktopApp'
+import DesktopApp from './apps/DesktopApp/DesktopApp'
 
 import './MachineApp.css'
 
-export default function MachineApp({setOpenApps, setActiveApp}) {
+export default function MachineApp({setOpenApps, setActiveApp, activeApp}) {
     return (
-            <div className="desktop_apps__grid">
-                <DesktopApp/>
+            <div style={{width: "100%", height: "100%"}}>
+                {activeApp.windowElement}
             </div>
         
     )
