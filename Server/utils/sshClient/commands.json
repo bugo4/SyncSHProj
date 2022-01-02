@@ -1,0 +1,16 @@
+{
+    "request": {
+        "connect": "sshConnectReq",
+        "sendCommand": "sshSendCommand"
+    },
+    "response": {
+        "connect": {
+            "success": "sshConnectSuccess",
+            "fail": "sshConnectFail"
+        },
+        "sendCommand": {
+            "success": "sendCommandSuccess",
+            "fail": "sendCommandFail"
+        }
+    }
+}
