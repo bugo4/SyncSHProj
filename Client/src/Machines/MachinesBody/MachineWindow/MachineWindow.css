@@ -1,0 +1,19 @@
+.os_window_body {
+    display: flex;
+    width: 100%;
+    height: 90%;
+    flex-direction: column;
+  }
+
+  .desktop_apps__container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    grid-auto-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    background-position: 0px 0px;
+    background-size: auto;
+    background-image: url("../../../assets/os_background.jpg");
+  }

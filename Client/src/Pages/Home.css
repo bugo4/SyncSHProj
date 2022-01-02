@@ -1,0 +1,124 @@
+.home_container {
+    height: 100vh;
+    max-width: 100vw;
+    background-image: url("../assets/os_background.jpg");
+    background-position: 0px 0px;
+    background-size: cover;
+}
+
+.home_grid 
+{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    justify-items: stretch;
+    align-items: stretch;
+    align-content: stretch;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 250px 250px;
+  }
+  
+
+.home_icon__main {
+    grid-area: 1 / 2 / 2 / 3;
+
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        padding: 20px;
+        border: 0;
+
+    /* -webkit-text-size-adjust: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333;
+  box-sizing: border-box;
+  border: 0;
+  vertical-align: middle;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  min-height: 200px;
+  min-width: 200px;
+  padding: 20px;
+  grid-area: 1 / 2 / 2 / 2; */
+  }
+  
+  
+
+
+
+
+  
+
+  .home_button {
+    padding-top: 122px;
+    padding-bottom: 0px;
+    background-color: hsla(208.00000000000003, 0.00%, 100.00%, 0.00);
+    transition-property: font-size;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+    font-size: 24px;
+    text-align: center;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    align-self: auto;
+    justify-self: auto;
+
+    
+    color: white;
+    border: 0;
+    line-height: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 0;
+  }
+  
+  .home_button:hover {
+    font-size: 28px;
+  }
+  
+  @media screen and (max-width: 479px) {
+      .home_button {
+        width: 100%;
+        margin-bottom: 20px;
+        padding-top: 20px;
+        padding-bottom: 0px;
+        font-size: 24px;
+      }
+      .home_grid {
+        display: flex;
+        flex-direction: column;
+    }
+    .home_icon__main {
+        width: 100%;
+        min-height: 300px;
+        min-width: 300px;
+        padding-top: 5px;
+        padding-right: 80px;
+        padding-bottom: 0px;
+        padding-left: 80px;
+      }
+  }
+
+  .home_button__login {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    align-self: auto;
+    justify-self: auto;
+  }
+
+  .home_button__register {
+    grid-column-start: 3;
+    grid-column-end: 4;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    align-self: auto;
+    justify-self: auto;
+  }

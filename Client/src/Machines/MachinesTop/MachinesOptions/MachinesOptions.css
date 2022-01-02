@@ -1,0 +1,7 @@
+.options_title__container {
+    display: flex;
+    overflow: auto;
+    height: 5%;
+    width: 100%;
+    background-color: aliceblue;
+}

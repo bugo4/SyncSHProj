@@ -1,0 +1,39 @@
+.os_toolbar__icon__app {
+    /* width: 5%;
+    height: 100%;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: auto;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    transition-property: background-color;
+    transition-duration: 200ms;
+    transition-timing-function: ease; */
+
+    width: 5%;
+    height: 100%;
+    /* margin-top: 0px; */
+    min-width: 40px;
+    min-height: 40px;
+    margin-right: 0.5%;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+  }
+  
+  .os_toolbar__icon__app:hover {
+    background-color: hsla(241, 59.69%, 65.27%, 0.52);
+  }
+
+  .os_toolbar_icon__active {
+    background-color: rgba(116, 114, 219, 0.295);
+  }

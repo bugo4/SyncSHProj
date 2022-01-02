@@ -1,0 +1,6 @@
+.title {
+  display: flex;
+  overflow: auto;
+  height: 5%;
+  background-color: hsla(0, 0%, 100%, 1);
+}
