@@ -102,7 +102,7 @@ def connect_to_ssh_server(msg_dict: dict, server_responder: Responder):
         return
     if account_id in SSH_CLIENTS.keys():
         print("Already connected to the ssh server...")
-        server_responder.connect_fail("Already connected to the ssh server...")
+        server_responder.connect_success("Already connected to the ssh server...")
     else:  # If all the params are valid, try to connect
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -113,6 +113,10 @@ def connect_to_ssh_server(msg_dict: dict, server_responder: Responder):
             print("Network error connecting to server...")
             return
         except paramiko.ssh_exception.SSHException as e:
+            server_responder.connect_fail("SSH Exception has occurred..." + str(e))
+            print("SSH Exception has occurred..." + str(e))
+            return
+        except TimeoutError as e:
             server_responder.connect_fail("SSH Exception has occurred..." + str(e))
             print("SSH Exception has occurred..." + str(e))
             return
