@@ -67,8 +67,8 @@ class Responder:
         self.send_message(Codes.Responses.SEND_COMMAND_SUCCESS,
                           {"message": message, "accountId": account_id, "sender": sender, "command": command})
 
-    def connect_fail(self, message: str = "unable to connect to server"):
-        self.send_message(Codes.Responses.CONNECT_FAIL, {"message": message})
+    def connect_fail(self, account_id, message: str = "unable to connect to server"):
+        self.send_message(Codes.Responses.CONNECT_FAIL, {"message": message, "accountId": account_id})
 
-    def connect_success(self, message: str = "successfully connected to the server"):
-        self.send_message(Codes.Responses.CONNECT_SUCCESS, {"message": message})
+    def connect_success(self, account_id, message: str = "successfully connected to the server"):
+        self.send_message(Codes.Responses.CONNECT_SUCCESS, {"message": message, "accountId": account_id})

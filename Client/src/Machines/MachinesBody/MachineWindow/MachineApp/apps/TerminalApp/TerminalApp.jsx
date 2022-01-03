@@ -1,12 +1,12 @@
 import React, { createRef } from "react";
 
-import { XTerm } from "xterm-for-react";
-
 import "./TerminalApp.css";
 import Terminal from "react-console-emulator";
 import { useEffect } from "react";
 
-export default function TerminalApp({ activeMachine }) {
+import axios from 'axios'
+
+export default function TerminalApp({ activeMachine, machineResponse, onSSHCommand }) {
     // const xtermRef = React.useRef(null);
 
     // React.useEffect(() => {
@@ -26,8 +26,13 @@ export default function TerminalApp({ activeMachine }) {
     //         }}
     //     />
     // );
-    function handleCommand(result) {
-        console.log(result.rawInput);
+    useEffect(() => {
+        terminalRef.current.pushToStdout(machineResponse)
+    }, [machineResponse])
+    async function handleCommand(result) {
+        const chosenCommand = result.rawInput;
+        const serverResponse = await onSSHCommand(chosenCommand)
+        terminalRef.current.pushToStdout(serverResponse.message)
     }
     const terminalRef = createRef();
     let terminal = (
@@ -44,7 +49,7 @@ export default function TerminalApp({ activeMachine }) {
                 background:
                     "url('https://storage.needpix.com/rsynced_images/abstract-wallpaper-1442844111BON.jpg')",
             }}
-            promptLabel={<b>{activeMachine.activeMachine.name}@SyncSH:~$</b>}
+            promptLabel={<b>{activeMachine.name}@SyncSH:~$</b>}
             welcomeMessage={["Welcome to the terminal emulator!"]}
             processCommand={() => console.log("Processing.....")}
         />

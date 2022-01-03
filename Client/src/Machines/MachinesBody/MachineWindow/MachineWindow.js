@@ -15,19 +15,20 @@ import DesktopIcon from "../../../assets/syncsh_icon.png"
 
 import TerminalApp from "./MachineApp/apps/TerminalApp/TerminalApp";
 import TerminalIcon from "../../../assets/terminal_icon.png" 
+import axios from "axios";
 
 // import { useCancelToken } from '../../../utils/hooks';
 function createTaskbarApp(name, windowElement, srcIcon) {
     return {name, windowElement, srcIcon}
 }
 
-export default function MachineWindow({ activeMachine }) {
+export default function MachineWindow({ activeMachine, machineResponse, onSSHCommand }) {
     const mainApp = createTaskbarApp("Desktop", <DesktopApp/>, DesktopIcon)
-
+    
     const [connectionResponse, setConnectionResponse] = useState(null);
     const [openApps, setOpenApps] = useState([
         mainApp,
-        createTaskbarApp("Terminal", <TerminalApp activeMachine={{activeMachine}}/>, TerminalIcon)
+        createTaskbarApp("Terminal", <TerminalApp activeMachine={activeMachine} machineResponse={machineResponse} onSSHCommand={onSSHCommand}/>, TerminalIcon)
     ])
     const [activeApp, setActiveApp] = useState(mainApp)
 
@@ -60,7 +61,7 @@ export default function MachineWindow({ activeMachine }) {
         openApps.push(openedApp)
         setActiveApp(openedApp)
     }
-
+    
     function getConnectionResponseElements() {
         const { type } = connectionResponse;
         if (connectionResponse.type === "success")

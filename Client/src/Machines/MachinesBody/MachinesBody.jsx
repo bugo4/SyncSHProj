@@ -4,7 +4,7 @@ import "./MachinesBody.css";
 import MachineWindow from "./MachineWindow/MachineWindow";
 
 
-export default function MachinesBody({activeMachine, sendMessage}) {
+export default function MachinesBody({activeMachine, sendMessage, machineResponse, onSSHCommand}) {
 
   function handleMachineSettings(event) {
     alert(event)
@@ -14,7 +14,7 @@ export default function MachinesBody({activeMachine, sendMessage}) {
   return (
     activeMachine ? (
     <>
-    <MachineWindow activeMachine={activeMachine}/>
+    <MachineWindow activeMachine={activeMachine} machineResponse={machineResponse} onSSHCommand={onSSHCommand}/>
     </> ): 
     <img
       className="machines_start_image"

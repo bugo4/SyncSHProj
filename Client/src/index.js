@@ -4,14 +4,19 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router} from 'react-router-dom'
+import {RecoilRoot} from 'recoil';
 // import { CookiesProvider } from 'react-cookie';
+
 
 ReactDOM.render(
   <React.StrictMode>
+    <RecoilRoot>
+
     <Router>
     <App />
 
     </Router>
+    </RecoilRoot>
     {/* <CookiesProvider> */}
     {/* </CookiesProvider> */}
   </React.StrictMode>,

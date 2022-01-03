@@ -112,15 +112,20 @@ class SSHClient {
         this.#sendConnectSSH(AccountId, ServerIP, ServerPort, AccountName, AccountPassword)
         return new Promise((resolve, reject) => {
             this.serviceEvent.on(successServerResponse, data => {
-                console.log("(connectSSH) SSHClient succeeded")
-                resolve(data);
+                if (data.accountId == AccountId) {
+                    console.log("(connectSSH) SSHClient succeeded")
+                    resolve(data);
+                }
                 // if (ServerIP == SSHServerIP && ServerPort == SSHServerPort) {
                 //     return resolve();
                 // }
             })
             this.serviceEvent.on(failureServerResponse, data => {
-                console.log("(connectSSH) SSHClient failed")
-                reject(data.message);
+                if (data.accountId == AccountId) {
+                    console.log("(connectSSH) SSHClient failed")
+                    reject(data.message);
+                }
+                
                 // if (ServerIP == SSHServerIP && ServerPort == SSHServerPort) {
                 //     return reject();
                 // }
@@ -136,23 +141,29 @@ class SSHClient {
      * @param {String} userName Chosen User Name.
      */
     async sendCommand(AccountId, sender, command) {
-        const successServerResponse = commands.response.connect.success
-        const failureServerResponse = commands.response.connect.fail
+        const successServerResponse = commands.response.sendCommand.success
+        const failureServerResponse = commands.response.sendCommand.fail
         this.#sendCommand(AccountId, sender, command)
         // this.#handleSendMessages(this.#convertMessageToString(sendCommandCode, {ServerIP, ServerPort, command}))
         return new Promise((resolve, reject) => {
             this.serviceEvent.on(successServerResponse, data => {
-                const { accountId: accountIdResponse, sender: senderResponse, command: commandResponse } = data
-                if (accountIdResponse === AccountId && sender === senderResponse && commandResponse)
+                console.log("data:")
+                console.log(data)
+                if (data.accountId === AccountId && sender === data.sender && command == data.command) {
                     console.log("(sendCommand) SSHClient succeeded")
                     resolve(data);
+                }
+                    
                 // if (ServerIP == SSHServerIP && ServerPort == SSHServerPort) {
                 //     return resolve();
                 // }
             })
             this.serviceEvent.on(failureServerResponse, data => {
-                console.log("(sendCommand) SSHClient failed")
-                reject(data.message);
+                if (data.accountId === AccountId) {
+                    console.log("(sendCommand) SSHClient failed")
+                    reject(data.message);
+                }
+                
                 // if (ServerIP == SSHServerIP && ServerPort == SSHServerPort) {
                 //     return reject();
                 // }

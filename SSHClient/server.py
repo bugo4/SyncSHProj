@@ -31,15 +31,15 @@ def send_command_to_ssh_server(msg_dict: dict, server_responder: Responder):
     try:
         account_id, sender, command = get_command_params(d)
     except KeyError:
-        server_responder.send_command_fail("Missing params...")  # Todo: Think more about id
+        # server_responder.send_command_fail("Missing params...")  # Todo: Think more about id
         print("Missing params....")
         return
     if not account_id or not command:
-        server_responder.send_command_fail("Missing params...")
+        # server_responder.send_command_fail("Missing params...")
         print("Missing params....")
         return
     elif account_id not in SSH_CLIENTS.keys():
-        server_responder.send_command_fail("account id was not found...")
+        server_responder.send_command_fail(account_id, sender, command, "account id was not found...")
         print("account id was not found...")
         return
     print("Sending command! :)")
@@ -52,7 +52,7 @@ def send_command_to_ssh_server(msg_dict: dict, server_responder: Responder):
         return
     # print(ssh_stdin)
     print(ssh_stdout.read().decode())
-    server_responder.send_command_success(ssh_stdout.read().decode())
+    server_responder.send_command_success(account_id, sender, command, ssh_stdout.read().decode())
     # print(ssh_stderr)
 
 
@@ -61,28 +61,31 @@ def main():
     listening_socket.bind((SERVER_HOST, SERVER_PORT))
     listening_socket.listen()
     print("listening on port " + str(SERVER_PORT))
-    client_socket, client_address = listening_socket.accept()
-    with client_socket:
-        server_responder = Responder(client_socket)
-        print(f"{client_address=}")
-        while True:
-            try:
-                client_msg = client_socket.recv(1024)
-            except ConnectionResetError:
-                print("Connection lost... bye bye")
-                return
-            print(client_msg)
-            try:
-                msg_dict = json.loads(client_msg.decode())
-            except json.decoder.JSONDecodeError:
-                print("Unable to decode json...")
-                continue
-            print(msg_dict)
-            command_type = msg_dict["type"]
-            if Codes.Requests.is_connect(command_type):
-                connect_to_ssh_server(msg_dict, server_responder)
-            elif Codes.Requests.is_send_command(command_type):
-                send_command_to_ssh_server(msg_dict, server_responder)
+    has_client_closed_connection = False
+    while True:
+        client_socket, client_address = listening_socket.accept()
+        with client_socket:
+            server_responder = Responder(client_socket)
+            print(f"{client_address=}")
+            while not has_client_closed_connection:
+                try:
+                    client_msg = client_socket.recv(1024)
+                except ConnectionResetError:
+                    print("Connection lost... bye bye")
+                    has_client_closed_connection = True
+                print(client_msg)
+                try:
+                    msg_dict = json.loads(client_msg.decode())
+                except json.decoder.JSONDecodeError:
+                    print("Unable to decode json...")
+                    continue
+                print(msg_dict)
+                command_type = msg_dict["type"]
+                if Codes.Requests.is_connect(command_type):
+                    connect_to_ssh_server(msg_dict, server_responder)
+                elif Codes.Requests.is_send_command(command_type):
+                    send_command_to_ssh_server(msg_dict, server_responder)
+        has_client_closed_connection = False
 
 
 def connect_to_ssh_server(msg_dict: dict, server_responder: Responder):
@@ -102,7 +105,7 @@ def connect_to_ssh_server(msg_dict: dict, server_responder: Responder):
         return
     if account_id in SSH_CLIENTS.keys():
         print("Already connected to the ssh server...")
-        server_responder.connect_fail("Already connected to the ssh server...")
+        server_responder.connect_success(account_id, "Already connected to the ssh server...")
     else:  # If all the params are valid, try to connect
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -116,9 +119,13 @@ def connect_to_ssh_server(msg_dict: dict, server_responder: Responder):
             server_responder.connect_fail("SSH Exception has occurred..." + str(e))
             print("SSH Exception has occurred..." + str(e))
             return
+        except TimeoutError as e:
+            server_responder.connect_fail("SSH Exception has occurred..." + str(e))
+            print("SSH Exception has occurred..." + str(e))
+            return
         print("Connected successfully! :)")
         SSH_CLIENTS[account_id] = ssh
-        server_responder.connect_success()
+        server_responder.connect_success(account_id)
 
 
 def get_connect_params(d: dict):

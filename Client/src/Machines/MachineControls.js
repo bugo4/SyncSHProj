@@ -26,4 +26,15 @@ export default {
               });
           });
     },
+    sendSSHCommand(accountId, command, sender) {
+      return new Promise((resolve, reject) => {
+          axios.post("/ssh/client/command", {command, accountId, sender})
+          .then(data => {
+              resolve(data)
+          })
+          .catch(err => {
+              reject(err)
+          })
+      })
+    }
 }
