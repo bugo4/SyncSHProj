@@ -27,7 +27,7 @@ export default function MachineWindow({ activeMachine }) {
     const [connectionResponse, setConnectionResponse] = useState(null);
     const [openApps, setOpenApps] = useState([
         mainApp,
-        createTaskbarApp("Terminal", <TerminalApp/>, TerminalIcon)
+        createTaskbarApp("Terminal", <TerminalApp activeMachine={{activeMachine}}/>, TerminalIcon)
     ])
     const [activeApp, setActiveApp] = useState(mainApp)
 
