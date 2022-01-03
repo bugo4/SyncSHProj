@@ -4,7 +4,8 @@ import "./TerminalApp.css";
 import Terminal from "react-console-emulator";
 import { useEffect } from "react";
 
-import axios from 'axios'
+import {useRecoilValue} from 'recoil'
+import {serverCommandResponseState} from '../../../../../../shared/globalState'
 
 export default function TerminalApp({ activeMachine, machineResponse, onSSHCommand }) {
     // const xtermRef = React.useRef(null);
@@ -26,13 +27,28 @@ export default function TerminalApp({ activeMachine, machineResponse, onSSHComma
     //         }}
     //     />
     // );
+    // useEffect(() => {
+    //     alert(machineResponse)
+    //     terminalRef.current.pushToStdout(machineResponse)
+    // }, [machineResponse])
+    // useEffect(() => {
+    //     machineResponse.on("success", result => {
+    //         alert(result)
+    //         terminalRef.current.pushToStdout(result)
+    //     })
+    // }, [])
+    const serverCommandResponse = useRecoilValue(serverCommandResponseState)
+    const [, updateState] = React.useState();
+    const forceUpdate = React.useCallback(() => updateState({}), []);
     useEffect(() => {
-        terminalRef.current.pushToStdout(machineResponse)
-    }, [machineResponse])
+        terminalRef.current.pushToStdout(serverCommandResponse);
+    }, [serverCommandResponse])
+    
     async function handleCommand(result) {
         const chosenCommand = result.rawInput;
         const serverResponse = await onSSHCommand(chosenCommand)
-        terminalRef.current.pushToStdout(serverResponse.message)
+        
+        console.dir(serverResponse)
     }
     const terminalRef = createRef();
     let terminal = (

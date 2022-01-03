@@ -51,15 +51,15 @@ export default function MachineWindow({ activeMachine, machineResponse, onSSHCom
     function handleOpenApp(openedApp) {
         for(let i = 0; i < openApps.length; i++) {
             if (openApps[i].name === openedApp.name) {
-                setActiveApp(openedApp)
+                setActiveApp({...openedApp})
                 return;
             }
         }
         alert("No match was found...")
         console.dir(openApps)
         console.dir(openedApp)
-        openApps.push(openedApp)
-        setActiveApp(openedApp)
+        setOpenApps([...openApps, openedApp])
+        setActiveApp({...openedApp})
     }
     
     function getConnectionResponseElements() {

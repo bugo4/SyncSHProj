@@ -9,13 +9,18 @@ import MachinesOptions from "./MachinesTop/MachinesOptions/MachinesOptions";
 
 import MachineControls from './MachineControls'
 
+// import events from "events"
+import { useRecoilState } from 'recoil'
+import {serverCommandResponseState} from '../shared/globalState'
+
 export default function MachinesContainer({ username }) {
     const [openMachines, setOpenMachines] = useState([]);
     const [showMachines, setShowMachines] = useState(false);
     const [activeMachine, setActiveMachine] = useState();
     const [roomPlayers, setRoomPlayers] = useState([]);
     const [playerEvents, setPlayerEvents] = useState([]);
-    const [machineResponse, setMachineResponse] = useState("");
+    // const machineResponse = new events.EventEmitter();
+    const [serverCommandResponse, setServerCommandResponse] = useRecoilState(serverCommandResponseState);
 
     const SocketUrl = "ws://localhost:5000/ssh/client";
 
@@ -41,10 +46,15 @@ export default function MachinesContainer({ username }) {
         switch (op) {
             case 10:
                 setRoomPlayers([...d])
+                break;
             case 20:
-                if (d.sender === username) 
-                    setMachineResponse(d.result)
+                console.dir(d)
+                if (d.sender == username) {
+                    // machineResponse.emit("success", d.result)
+                    setServerCommandResponse(d.result)
+                } 
                 setPlayerEvents([...playerEvents, {type: "command", ...d }])
+                break
         }
         // Handle get room players
     }, [lastMessage])
@@ -99,7 +109,7 @@ export default function MachinesContainer({ username }) {
                 activeMachine={activeMachine}
             />
             <MachinesOptions roomPlayers={roomPlayers} wsReadyState={readyState} username={username} playerEvents={playerEvents}/>
-            <MachinesBody activeMachine={activeMachine} sendMessage={sendMessage} machineResponse={machineResponse} onSSHCommand={handleSendSSHCommand}/>
+            <MachinesBody activeMachine={activeMachine} sendMessage={sendMessage} machineResponse={""} onSSHCommand={handleSendSSHCommand}/>
             {showMachines && (
                 <MachinesPicker
                     onCloseMachinesPicker={handleCloseMachinesPicker}
