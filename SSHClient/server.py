@@ -51,8 +51,11 @@ def send_command_to_ssh_server(msg_dict: dict, server_responder: Responder):
         server_responder.send_command_fail(account_id, sender, command, str(e))
         return
     # print(ssh_stdin)
-    print(ssh_stdout.read().decode())
-    server_responder.send_command_success(account_id, sender, command, ssh_stdout.read().decode())
+    outlines = ssh_stdout.readlines()
+    resp = ''.join(outlines)
+    print(resp)
+    # print(ssh_stdout.read().decode())
+    server_responder.send_command_success(account_id, sender, command, resp)
     # print(ssh_stderr)
 
 
@@ -67,6 +70,7 @@ def main():
         with client_socket:
             server_responder = Responder(client_socket)
             print(f"{client_address=}")
+            client_msg = b""
             while not has_client_closed_connection:
                 try:
                     client_msg = client_socket.recv(1024)
@@ -80,11 +84,16 @@ def main():
                     print("Unable to decode json...")
                     continue
                 print(msg_dict)
+
                 command_type = msg_dict["type"]
-                if Codes.Requests.is_connect(command_type):
-                    connect_to_ssh_server(msg_dict, server_responder)
-                elif Codes.Requests.is_send_command(command_type):
-                    send_command_to_ssh_server(msg_dict, server_responder)
+                try:
+                    if Codes.Requests.is_connect(command_type):
+                        connect_to_ssh_server(msg_dict, server_responder)
+                    elif Codes.Requests.is_send_command(command_type):
+                        send_command_to_ssh_server(msg_dict, server_responder)
+                except ConnectionResetError:
+                    print("Connection lost... bye bye")
+                    has_client_closed_connection = True
         has_client_closed_connection = False
 
 
@@ -100,7 +109,7 @@ def connect_to_ssh_server(msg_dict: dict, server_responder: Responder):
     try:
         port = int(server_port)
     except ValueError:
-        server_responder.connect_fail("Port is not a number...")
+        server_responder.connect_fail(account_id, "Port is not a number...")
         print("Port is not a number...")
         return
     if account_id in SSH_CLIENTS.keys():
@@ -112,15 +121,15 @@ def connect_to_ssh_server(msg_dict: dict, server_responder: Responder):
         try:
             ssh.connect(server_ip, port=port, username=account_username, password=account_password)
         except paramiko.ssh_exception.NoValidConnectionsError:
-            server_responder.connect_fail("Network error connecting to server...")
+            server_responder.connect_fail(account_id, "Network error connecting to server...")
             print("Network error connecting to server...")
             return
         except paramiko.ssh_exception.SSHException as e:
-            server_responder.connect_fail("SSH Exception has occurred..." + str(e))
+            server_responder.connect_fail(account_id, "SSH Exception has occurred..." + str(e))
             print("SSH Exception has occurred..." + str(e))
             return
         except TimeoutError as e:
-            server_responder.connect_fail("SSH Exception has occurred..." + str(e))
+            server_responder.connect_fail(account_id, "SSH Exception has occurred..." + str(e))
             print("SSH Exception has occurred..." + str(e))
             return
         print("Connected successfully! :)")
