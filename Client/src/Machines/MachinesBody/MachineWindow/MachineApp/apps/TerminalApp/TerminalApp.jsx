@@ -1,4 +1,4 @@
-import React, { createRef } from "react";
+import React, { useRef } from "react";
 
 import "./TerminalApp.css";
 import Terminal from "react-console-emulator";
@@ -62,7 +62,7 @@ export default function TerminalApp({ activeMachine, machineResponse, onSSHComma
         setNotify({isOpen: false, type: "error", message: ""})
     }
 
-    const terminalRef = createRef();
+    const terminalRef = useRef();
     let terminal = (
         <Terminal
             errorText={" "}

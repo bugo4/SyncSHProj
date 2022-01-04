@@ -33,6 +33,11 @@ export default function MachineWindow({ activeMachine, machineResponse, onSSHCom
     const [activeApp, setActiveApp] = useState(mainApp)
 
     useEffect(() => {
+        const newOpenApps = [...openApps]
+        newOpenApps[1] = createTaskbarApp("Terminal", <TerminalApp activeMachine={activeMachine} machineResponse={machineResponse} onSSHCommand={onSSHCommand}/>, TerminalIcon)
+        setOpenApps(newOpenApps)
+        setActiveApp(mainApp)
+        
         setConnectionResponse(null);
         console.log(activeMachine);
         handleConnectionRequest(activeMachine._id)
