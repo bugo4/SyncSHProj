@@ -139,7 +139,7 @@ router.post("/command", isLoggedIn, isWSConnected, async (req, res) => {
         SSHCommandResponse = await sshClientInstance.sendCommand(accountId, sender, command)
     } catch (e) {
         console.log(e)
-        return res.json({type: "error", message: e.message})
+        return res.json({type: "error", message: e})
     }
     console.log("Got SSH Commadn response")
     console.log(SSHCommandResponse)
