@@ -6,8 +6,13 @@ import { useEffect } from "react";
 
 import {useRecoilValue} from 'recoil'
 import {serverCommandResponseState} from '../../../../../../shared/globalState'
+import { Snackbar } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 
 export default function TerminalApp({ activeMachine, machineResponse, onSSHCommand }) {
+
+    const [notify, setNotify] = React.useState({isOpen: false, type: "error", message: ""});
+
     // const xtermRef = React.useRef(null);
 
     // React.useEffect(() => {
@@ -47,9 +52,16 @@ export default function TerminalApp({ activeMachine, machineResponse, onSSHComma
     async function handleCommand(result) {
         const chosenCommand = result.rawInput;
         const serverResponse = await onSSHCommand(chosenCommand)
-        
+        if (serverResponse.data?.type === "error") {
+            setNotify({isOpen: true, type: "error", message: serverResponse.data?.message})
+        }
         console.dir(serverResponse)
     }
+
+    function handleClose(e, reason) {
+        setNotify({isOpen: false, type: "error", message: ""})
+    }
+
     const terminalRef = createRef();
     let terminal = (
         <Terminal
@@ -75,5 +87,20 @@ export default function TerminalApp({ activeMachine, machineResponse, onSSHComma
         terminalRef.current.pushToStdout("Wassup ");
     }, []);
 
-    return terminal;
+    return <>
+        {terminal}
+        <Snackbar
+            open={notify.isOpen}
+            autoHideDuration={3000}
+            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+            onClose={handleClose}
+            >
+            <Alert 
+                severity={notify.type}
+                onClose={handleClose}
+                >
+                    {notify.message}
+            </Alert>
+        </Snackbar>
+    </>;
 }
