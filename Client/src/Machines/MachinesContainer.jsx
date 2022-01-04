@@ -11,7 +11,7 @@ import MachineControls from './MachineControls'
 
 // import events from "events"
 import { useRecoilState } from 'recoil'
-import {serverCommandResponseState} from '../shared/globalState'
+import {serverCommandResponseState, hasSeenLogsNotificationsState } from '../shared/globalState'
 
 export default function MachinesContainer({ username }) {
     const [openMachines, setOpenMachines] = useState([]);
@@ -21,6 +21,7 @@ export default function MachinesContainer({ username }) {
     const [playerEvents, setPlayerEvents] = useState([]);
     // const machineResponse = new events.EventEmitter();
     const [serverCommandResponse, setServerCommandResponse] = useRecoilState(serverCommandResponseState);
+    const [hasSeenLogsNotifications, setHasSeenLogsNotifications] = useRecoilState(hasSeenLogsNotificationsState);
 
     const SocketUrl = "ws://localhost:5000/ssh/client";
 
@@ -51,9 +52,14 @@ export default function MachinesContainer({ username }) {
                 console.dir(d)
                 if (d.sender == username) {
                     // machineResponse.emit("success", d.result)
-                    setServerCommandResponse(d.result)
+                    if (d.result === serverCommandResponse) {
+                        setServerCommandResponse(d.result + " ")
+                    } else {
+                        setServerCommandResponse(d.result)
+                    }
                 } 
                 setPlayerEvents([...playerEvents, {type: "command", ...d }])
+                setHasSeenLogsNotifications(false)
                 break
         }
         // Handle get room players
