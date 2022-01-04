@@ -47,6 +47,7 @@ export default function MachinesContainer({ username }) {
         switch (op) {
             case 10:
                 setRoomPlayers([...d])
+                setServerCommandResponse("")
                 break;
             case 20:
                 console.dir(d)
