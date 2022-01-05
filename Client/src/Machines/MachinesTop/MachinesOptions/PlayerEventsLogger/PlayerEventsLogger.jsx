@@ -60,7 +60,7 @@ export default function PlayerEventsLogger({ playerEvents }) {
                     {playerEvents.map((playerEvent) => {
                         if (playerEvent.type === "command") {
                             return (
-                                <Typography>
+                                <Typography key={playerEvent.type+playerEvent.sender+playerEvent.command}>
                                     <strong>{playerEvent.sender}</strong>: {playerEvent.command}
                                 </Typography>
                             );
