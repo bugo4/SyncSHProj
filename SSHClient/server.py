@@ -132,6 +132,10 @@ def connect_to_ssh_server(msg_dict: dict, server_responder: Responder):
             server_responder.connect_fail(account_id, "SSH Exception has occurred..." + str(e))
             print("SSH Exception has occurred..." + str(e))
             return
+        except TimeoutError as e:
+            server_responder.connect_fail("SSH Exception has occurred..." + str(e))
+            print("SSH Exception has occurred..." + str(e))
+            return
         print("Connected successfully! :)")
         SSH_CLIENTS[account_id] = ssh
         server_responder.connect_success(account_id)
