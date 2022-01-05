@@ -3,6 +3,7 @@ import { Avatar, Typography } from '@material-ui/core'
 import { Alert, AvatarGroup } from '@material-ui/lab'
 import React from 'react'
 import { ReadyState } from 'react-use-websocket'
+import LogoutButton from './LogoutButton/LogoutButton'
 
 
 import './MachinesOptions.css'
@@ -29,6 +30,7 @@ export default function MachinesOptions({roomPlayers, wsReadyState, username, pl
             </AvatarGroup>
             <Typography style={{marginLeft: "30px", alignSelf: "center"}}>User: {username}</Typography>
             <PlayerEventsLogger playerEvents={playerEvents}/>
+            <LogoutButton />
         </div>
     )
 }
