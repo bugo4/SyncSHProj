@@ -1,5 +1,5 @@
 # SyncSH - Made By Noam Bigelman
-## _Sync Clients Between SSH_
+## _Sync SSH Activity Between Clients_
 
 
 ## Client:
