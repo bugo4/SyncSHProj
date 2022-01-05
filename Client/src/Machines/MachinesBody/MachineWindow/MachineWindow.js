@@ -9,14 +9,35 @@ import OSToolbar from "./OSToolbar/OSToolbar";
 import "./MachineWindow.css";
 import { Alert, AlertTitle } from "@material-ui/lab";
 
-// import { useCancelToken } from '../../../utils/hooks';
 
-export default function MachineWindow({ activeMachine }) {
+import DesktopApp from "./MachineApp/apps/DesktopApp/DesktopApp";
+import DesktopIcon from "../../../assets/syncsh_icon.png" 
+
+import TerminalApp from "./MachineApp/apps/TerminalApp/TerminalApp";
+import TerminalIcon from "../../../assets/terminal_icon.png" 
+import axios from "axios";
+
+// import { useCancelToken } from '../../../utils/hooks';
+function createTaskbarApp(name, windowElement, srcIcon) {
+    return {name, windowElement, srcIcon}
+}
+
+export default function MachineWindow({ activeMachine, machineResponse, onSSHCommand }) {
+    const mainApp = createTaskbarApp("Desktop", <DesktopApp/>, DesktopIcon)
+    
     const [connectionResponse, setConnectionResponse] = useState(null);
-    const [openApps, setOpenApps] = useState([])
-    const [activeApp, setActiveApp] = useState(null)
+    const [openApps, setOpenApps] = useState([
+        mainApp,
+        createTaskbarApp("Terminal", <TerminalApp activeMachine={activeMachine} machineResponse={machineResponse} onSSHCommand={onSSHCommand}/>, TerminalIcon)
+    ])
+    const [activeApp, setActiveApp] = useState(mainApp)
 
     useEffect(() => {
+        const newOpenApps = [...openApps]
+        newOpenApps[1] = createTaskbarApp("Terminal", <TerminalApp activeMachine={activeMachine} machineResponse={machineResponse} onSSHCommand={onSSHCommand}/>, TerminalIcon)
+        setOpenApps(newOpenApps)
+        setActiveApp(mainApp)
+        
         setConnectionResponse(null);
         console.log(activeMachine);
         handleConnectionRequest(activeMachine._id)
@@ -33,17 +54,19 @@ export default function MachineWindow({ activeMachine }) {
     }, [activeMachine]);
 
     function handleOpenApp(openedApp) {
-        alert(openedApp)
         for(let i = 0; i < openApps.length; i++) {
-            if (openApps[i] === openedApp) {
-                setActiveApp(openedApp)
+            if (openApps[i].name === openedApp.name) {
+                setActiveApp({...openedApp})
                 return;
             }
         }
-        openApps.push(openedApp)
-        setActiveApp(openedApp)
+        alert("No match was found...")
+        console.dir(openApps)
+        console.dir(openedApp)
+        setOpenApps([...openApps, openedApp])
+        setActiveApp({...openedApp})
     }
-
+    
     function getConnectionResponseElements() {
         const { type } = connectionResponse;
         if (connectionResponse.type === "success")
@@ -52,7 +75,7 @@ export default function MachineWindow({ activeMachine }) {
             return (
                 <div className="os_window_body">
                     <div className="desktop_apps__container">
-                        <MachineApp setOpenApps={setOpenApps} setActiveApp={setActiveApp}/>
+                        <MachineApp setOpenApps={setOpenApps} setActiveApp={setActiveApp} activeApp={activeApp}/>
                         <OSToolbar openApps={openApps} activeApp={activeApp} onOpenApp={handleOpenApp}/>
                     </div>
                 </div>

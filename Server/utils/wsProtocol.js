@@ -20,11 +20,11 @@ module.exports = {
         ws.send(JSON.stringify({op: 10, d: loggedPlayers}))
 
     },
-    sendNewMachineCommand: function(ws, newCommand, sentClient) {
+    sendMachineCommandResponse: function(ws, command, sender, result) {
         // this.sendWSMessage(ws, 10,
             //  loggedPlayers)
         if (!ws) return;
-        ws.send(JSON.stringify({op: 20, d: {newCommand, sentClient}}))
+        ws.send(JSON.stringify({op: 20, d: {command, sender, result}}))
 
     },
     sendWSMessage: function (ws, code, message) {

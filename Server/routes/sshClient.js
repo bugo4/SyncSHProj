@@ -7,7 +7,7 @@ const { isLoggedIn } = require("../utils/middlewares");
 
 const sshClients = require("../controllers/sshClient");
 
-const {Codes, sendWSMessage, sendLoggedPlayersInMachine} = require("../utils/wsProtocol")
+const {Codes, sendWSMessage, sendLoggedPlayersInMachine, sendMachineCommandResponse} = require("../utils/wsProtocol")
 const wsClients = new Map();
 const redisClient = require('../utils/redisClient');
 
@@ -106,7 +106,7 @@ router.post("/connect", isLoggedIn, isWSConnected, async (req, res) => {
 });
 
 router.post("/command", isLoggedIn, isWSConnected, async (req, res) => {
-    const { accountId = null, command = null } = req.body;
+    const { accountId = null, sender = null, command = null } = req.body;
     const userName = req.user.username;
     const userId = req.user._id;
     if (!accountId) return res.json({
@@ -134,30 +134,30 @@ router.post("/command", isLoggedIn, isWSConnected, async (req, res) => {
         });
     }
     // Message logic here
-    function sendCommandToSshClient() {
-        return true;
+    let SSHCommandResponse = ""
+    try {
+        SSHCommandResponse = await sshClientInstance.sendCommand(accountId, sender, command)
+    } catch (e) {
+        console.log(e)
+        return res.json({type: "error", message: e})
     }
-    if (sendCommandToSshClient(command)) {
-        const roomPlayers = await redisClient.sMembers(accountId);
-        console.log(roomPlayers)
-        /**
-         * Check if account exists inside redis - if so, push the client to the online users
-         * If account does not exist, add the account to redis and push the online user
-         */
-        res.json({
-            type: "success",
-            message: "Successfully sent the command...",
-        });
-        // roomPlayers = Get all redis clients inside the chosen accountId
-        // for roomPlayer in roomPlayers - send on ws the new list of online players
-        for (let i = 0; i < roomPlayers.length; i++) { // Broadcast to each player in the room
-            sendNewMachineCommand(wsClients.get(roomPlayers[i]), command, userName)
-        }
-    } else {
-        return res.json({
-            type: "error",
-            message: "Unable to send the command to the SSH server...",
-        });
+    console.log("Got SSH Commadn response")
+    console.log(SSHCommandResponse)
+    console.log("getting room players")
+    const roomPlayers = await redisClient.sMembers(accountId);
+    console.log(roomPlayers)
+    /**
+     * Check if account exists inside redis - if so, push the client to the online users
+     * If account does not exist, add the account to redis and push the online user
+     */
+    res.json({
+        type: "success",
+        message: "Successfully sent the command...",
+    });
+    // roomPlayers = Get all redis clients inside the chosen accountId
+    // for roomPlayer in roomPlayers - send on ws the new list of online players
+    for (let i = 0; i < roomPlayers.length; i++) { // Broadcast to each player in the room
+        sendMachineCommandResponse(wsClients.get(roomPlayers[i]), command, userName, SSHCommandResponse.message)
     }
 })
 

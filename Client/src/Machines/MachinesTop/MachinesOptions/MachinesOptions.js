@@ -4,8 +4,11 @@ import { Alert, AvatarGroup } from '@material-ui/lab'
 import React from 'react'
 import { ReadyState } from 'react-use-websocket'
 
+
 import './MachinesOptions.css'
-export default function MachinesOptions({roomPlayers, wsReadyState, username}) {
+import PlayerEventsLogger from './PlayerEventsLogger/PlayerEventsLogger'
+
+export default function MachinesOptions({roomPlayers, wsReadyState, username, playerEvents}) {
     const wsConnectionStatus = {
         [ReadyState.CONNECTING]: 'Connecting',
         [ReadyState.OPEN]: 'Open',
@@ -25,6 +28,7 @@ export default function MachinesOptions({roomPlayers, wsReadyState, username}) {
                 )}
             </AvatarGroup>
             <Typography style={{marginLeft: "30px", alignSelf: "center"}}>User: {username}</Typography>
+            <PlayerEventsLogger playerEvents={playerEvents}/>
         </div>
     )
 }
